@@ -275,11 +275,10 @@ void white_balance(uint8_t *img, int width, int height, int channels, float thre
 
 int main(int argc, char **argv)
 {
-    bool helpmode = false;
     string img_path;
     string out_path;
     float thresh;
-    if (parse_options(argc, argv, &helpmode, &img_path, &out_path, &float thresh) == 0)
+    if (parse_options(argc, argv, &img_path, &out_path, &thresh) == 0)
     {
 
         int width, height, channels;
@@ -294,7 +293,7 @@ int main(int argc, char **argv)
         }
 
         white_balance(img, width, height, channels);
-        stbi_write_png("temp.png", width, height, channels, img, width * channels);
+        stbi_write_png(out_path, width, height, channels, img, width * channels);
 
         // remember to free the image at the very end
         stbi_image_free(img);
