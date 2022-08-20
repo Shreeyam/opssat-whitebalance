@@ -99,16 +99,12 @@ int parse_options(int argc, char **argv, string *input, string *output, float *t
     // parse the tflite model path option, if given
     if (argv_index_thresh == -1)
     {
-        /* printf for documentation purposes only */
-#ifdef DEBUG
-        printf("no model given\n");
-#endif
         *thresh = 0.0005;
     }
     else
     {
         // figure out the type conversion lol
-        *thresh = float(argv[argv_index_thresh]);
+        *thresh = atof(argv[argv_index_thresh]);
     }
 
     return 0;
@@ -270,7 +266,7 @@ void white_balance(uint8_t *img, int width, int height, int channels, float thre
     }
 
     // Done!
-    return 0;
+    return;
 }
 
 int main(int argc, char **argv)
