@@ -20,6 +20,18 @@
 
 using std::string;
 
+string build_output_filename(string inimg_filename)
+{
+        /* create new file name for the output image file */
+        // todo: figure out how to get the extension
+        // substring from position to length of str
+        string image_file_ext = "png";
+        string outimg_filename = inimg_filename.substr(0, inimg_filename.find_last_of(".")) ;
+        outimg_filename.append(".wb.");
+        outimg_filename.append(image_file_ext);
+        return outimg_filename;
+}
+
 int parse_options(int argc, char **argv, string *input, string *output, float *thresh)
 {
     /* get provider host and port from command arguments */
@@ -36,10 +48,11 @@ int parse_options(int argc, char **argv, string *input, string *output, float *t
         if (streq(argv[argn], "--help") || streq(argv[argn], "-?"))
         {
             printf("wb [options] ...");
-            printf("\n  --input    / -i       the file path of the input image");
-            printf("\n  --output   / -o      the file path of the input image. default is image path with _wb attached.");
-            printf("\n  --thresh   / -t       change histogram thresh. Default 0.0005 (0.05%)");
-            printf("\n  --help     / -?       this information\n");
+            printf("\n  --input    / -i     the file path of the input image");
+            printf("\n  --output   / -o     the file path of the output image. default: input with .wb appended. handles image conversions.");
+            printf("\n  --thresh   / -t     change histogram thresh. Default 0.0005 (0.05\%)");
+            printf("\n  --help     / -?     this information\n");
+            printf("\n Written by Shreeyam Kacker for the ESA OPS-SAT Flight Controls Team");
 
             /* program error exit code */
             /* 11 	EAGAIN 	Try again */
@@ -68,7 +81,7 @@ int parse_options(int argc, char **argv, string *input, string *output, float *t
     if (argv_index_input == -1)
     {
         /* print error message */
-        printf("no image input path specified. Get help: ./io_demo -?\n");
+        printf("no image input path specified. Get help: ./wb -?\n");
 
         /* program error exit code */
         /* 22 	EINVAL 	Invalid argument */
@@ -76,10 +89,6 @@ int parse_options(int argc, char **argv, string *input, string *output, float *t
     }
     else
     {
-/* printf for documentation purposes only */
-#ifdef DEBUG
-        printf("image to process: %s\n", argv[argv_index_input]);
-#endif
         *input = string(argv[argv_index_input]);
     }
 
@@ -87,9 +96,7 @@ int parse_options(int argc, char **argv, string *input, string *output, float *t
     // parse the output image write mode option, if given
     if (argv_index_output == -1)
     {
-        /* printf for documentation purposes only */
-        printf("no output image will be written\n");
-        // todo: add wb to the image path here
+        *output = build_output_filename(*input);
     }
     else
     {
@@ -99,7 +106,7 @@ int parse_options(int argc, char **argv, string *input, string *output, float *t
     // parse the tflite model path option, if given
     if (argv_index_thresh == -1)
     {
-        *thresh = 0.0005;
+        *thresh = 0.005; // default value
     }
     else
     {
@@ -288,8 +295,8 @@ int main(int argc, char **argv)
             exit(1);
         }
 
-        white_balance(img, width, height, channels);
-        stbi_write_png(out_path, width, height, channels, img, width * channels);
+        white_balance(img, width, height, channels, thresh);
+        stbi_write_png(out_path.c_str(), width, height, channels, img, width * channels);
 
         // remember to free the image at the very end
         stbi_image_free(img);
