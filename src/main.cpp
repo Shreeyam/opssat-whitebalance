@@ -54,6 +54,7 @@ int parse_options(int argc, char **argv, string *input, string *output, float *t
             printf("\n  --thresh   / -t     change histogram thresh. Default 0.005 (0.5\%)");
             printf("\n  --help     / -?     this information\n");
             printf("\n Written by Shreeyam Kacker for the ESA OPS-SAT Flight Controls Team");
+            printf("\n Contact: shreeyamkacker@gmail.com, github.com/Shreeyam/opssat-whitebalance");
 
             /* program error exit code */
             /* 11 	EAGAIN 	Try again */
