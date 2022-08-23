@@ -13,7 +13,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-// TODO: add a labels.txt which is the classification labels
 
 /* define convenience macros */
 #define streq(s1, s2) (!strcmp((s1), (s2)))
@@ -25,9 +24,11 @@ string build_output_filename(string inimg_filename)
         /* create new file name for the output image file */
         // todo: figure out how to get the extension
         // substring from position to length of str
-        string image_file_ext = "png";
-        string outimg_filename = inimg_filename.substr(0, inimg_filename.find_last_of(".")) ;
-        outimg_filename.append(".wb.");
+        
+        int ext_position = inimg_filename.find_last_of(".");
+        string outimg_filename = inimg_filename.substr(0, ext_position);
+        string image_file_ext = inimg_filename.substr(ext_position);
+        outimg_filename.append(".wb");
         outimg_filename.append(image_file_ext);
         return outimg_filename;
 }
@@ -50,7 +51,7 @@ int parse_options(int argc, char **argv, string *input, string *output, float *t
             printf("wb [options] ...");
             printf("\n  --input    / -i     the file path of the input image");
             printf("\n  --output   / -o     the file path of the output image. default: input with .wb appended. handles image conversions.");
-            printf("\n  --thresh   / -t     change histogram thresh. Default 0.0005 (0.05\%)");
+            printf("\n  --thresh   / -t     change histogram thresh. Default 0.005 (0.5\%)");
             printf("\n  --help     / -?     this information\n");
             printf("\n Written by Shreeyam Kacker for the ESA OPS-SAT Flight Controls Team");
 
@@ -92,8 +93,6 @@ int parse_options(int argc, char **argv, string *input, string *output, float *t
         *input = string(argv[argv_index_input]);
     }
 
-    // --------------------------------------------------------------------------
-    // parse the output image write mode option, if given
     if (argv_index_output == -1)
     {
         *output = build_output_filename(*input);
@@ -103,7 +102,6 @@ int parse_options(int argc, char **argv, string *input, string *output, float *t
         *output = string(argv[argv_index_output]);
     }
 
-    // parse the tflite model path option, if given
     if (argv_index_thresh == -1)
     {
         *thresh = 0.005; // default value
